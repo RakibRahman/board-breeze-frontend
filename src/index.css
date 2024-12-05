@@ -12,3 +12,26 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.column {
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  display: inline-block;
+  vertical-align: top;
+  width: 200px;
+  height: 80dvh;
+  overflow: hidden;
+  overflow-y: scroll;
+
+}
+
+.sortable-item {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  color: #242424;
+  overflow: hidden;
+  cursor: move;
+}
