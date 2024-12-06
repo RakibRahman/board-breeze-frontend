@@ -4,35 +4,28 @@ import {
   SortableContext,
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
-import TaskCard from "./SortableItem";
+import TaskCard from "./TaskCard";
 import { useMemo } from "react";
 
 
 
 
-const containerStyle = {
-  background: "#f14",
-  padding: 10,
-  margin: 10,
-  flex: 1
-};
+
 
 type TaskColumnProps = {
   id:string
+  columnName:string
   items:{
     title:string,
     id:string,
 }[]
-name:string
-totalElements:number
-
 }
 
 export default function TaskColumn(props:TaskColumnProps) {
-  const { id:columnId, items,totalElements,name } = props;
+  const { id, items,columnName } = props;
 
   const { setNodeRef } = useDroppable({
-   id: columnId
+    id
   });
   const tasksIds = useMemo(() => {
     return items?.length > 0 ? items?.map((task) => task?.id) : [];
@@ -40,18 +33,15 @@ export default function TaskColumn(props:TaskColumnProps) {
 
   return (
     <SortableContext
-      id={columnId}
+      id={id}
       items={tasksIds}
       strategy={verticalListSortingStrategy}
     >
-      <div ref={setNodeRef} style={containerStyle}>
-        {name}--{totalElements}
-        <div  className="column">
+      <div ref={setNodeRef} className="column">
+        {columnName}
         {items.map((id) => (
-          <TaskCard key={id.id} id={id.id} name={id.title} columnId={columnId as never} />
+          <TaskCard key={id?.id} id={id?.id} name={id?.title} />
         ))}
-        </div>
-       
       </div>
     </SortableContext>
   );

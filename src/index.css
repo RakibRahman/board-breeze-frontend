@@ -19,8 +19,8 @@
   border: 1px solid #ccc;
   display: inline-block;
   vertical-align: top;
-  width: 200px;
-  height: 80dvh;
+  width: 220px;
+  height: 90dvh;
   overflow: hidden;
   overflow-y: scroll;
 
@@ -34,4 +34,11 @@
   color: #242424;
   overflow: hidden;
   cursor: move;
+}
+
+.drag-placeholder{
+  height: 160px;
+  background:#ddd;
+  opacity:0.5;
+
 }

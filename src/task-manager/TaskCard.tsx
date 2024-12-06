@@ -24,35 +24,26 @@ export function Item(props:TaskCardProps) {
 type TaskCardProps={
     id:string | UniqueIdentifier
     name:string
-    columnId?:string | number
 }
 
 export default function TaskCard(props:TaskCardProps) {
-    const {id,name,columnId} = props;
+    const {id,name} = props;
   const {
     attributes,
     listeners,
     setNodeRef,
-    transform,isDragging,
+    transform,
     transition
-  } = useSortable({ id: id??'',data: {
-    type: 'Task',
-    cardData:{id,name},
-    columnId
-},});
+  } = useSortable({ id: id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
   };
 
-  if(isDragging){
-    return <div ref={setNodeRef} style={style} className="drag-placeholder"></div>
-  }
-
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <Item  id={props.id} name={name} />
+      <Item id={props.id} name={name} />
     </div>
   );
 }

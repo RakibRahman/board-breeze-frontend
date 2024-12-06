@@ -1,6 +1,6 @@
-import { closestCorners, DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, KeyboardSensor, PointerSensor, rectIntersection, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core";
+import { closestCorners, DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, KeyboardSensor, MeasuringStrategy, PointerSensor, rectIntersection, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core";
 import { columnData, initialData } from "./data";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { arrayMove, horizontalListSortingStrategy, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import TaskCard, { Item } from "./SortableItem";
 import { Column, TaskList } from "./types";
@@ -17,10 +17,14 @@ const wrapperStyle = {
 const MultiColumnDragAndDrop = () => {
     const [columns, setColumns] = useState<Column>(columnData);
     const [taskList,setTaskList] = useState<TaskList>(initialData);
-    const [activeId, setActiveId] = useState<UniqueIdentifier | null>();
-
+    const [activeId, setActiveId] = useState<{id:string,title:string} | null>();
+    const lastActiveId = useRef<string | number | null>(null);
    const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+          distance: 3,
+      },
+  }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
@@ -42,9 +46,10 @@ const MultiColumnDragAndDrop = () => {
 
       function handleDragStart(event:DragStartEvent) {
         const { active } = event;
-        const { id } = active;
-    
-        setActiveId(id);
+        const { id ,data} = active;
+    console.log({data:data.current});
+    const findActiveTask = taskList[data?.current?.columnId].content.find((task)=>task.id===id);
+        setActiveId(findActiveTask);
       }
 
       function handleDragOver(event: any) {
@@ -82,12 +87,13 @@ const MultiColumnDragAndDrop = () => {
       
             newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
           }
-      
+          lastActiveId.current = activeContainer;
           return {
             ...prev,
             [activeContainer]: {
               ...prev[activeContainer],
               content: activeItems.filter((item) => item.id !== activeId),
+              totalElements:prev[activeContainer].totalElements-1
             },
             [overContainer]: {
               ...prev[overContainer],
@@ -96,12 +102,14 @@ const MultiColumnDragAndDrop = () => {
                 activeItems[activeIndex],
                 ...overItems.slice(newIndex, overItems.length),
               ],
+              totalElements:prev[overContainer].totalElements+1
             },
           };
         });
       }
       
    
+console.log({taskList});
 
       function handleDragEnd(event:any) {
         const { active, over } = event;
@@ -119,7 +127,7 @@ const MultiColumnDragAndDrop = () => {
           return;
         }
     
-        const activeIndex = taskList[activeContainer].content?.findIndex((m) => m?.id === activeId);
+        const activeIndex = taskList[activeContainer].content?.findIndex((m) => m?.id === activeId?.id);
         const overIndex = taskList[overContainer].content?.findIndex((m) => m?.id === overId);
     
         if (activeIndex !== overIndex) {
@@ -134,6 +142,7 @@ const MultiColumnDragAndDrop = () => {
         }
     
         setActiveId(null);
+      console.log({toCOl:activeContainer,fromCOlId:lastActiveId.current,activeIndex,overIndex});
       
     }
     return (
@@ -146,15 +155,20 @@ const MultiColumnDragAndDrop = () => {
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
+                measuring={{
+                  droppable: {
+                      strategy: MeasuringStrategy.WhileDragging,
+                  },
+              }}
               >
                 {
                     columns.map((col)=>(
-                      <TaskColumn key={col.id} id={col.id} items={taskList[col.id].content} />
+                      <TaskColumn key={col.id} id={col.id} name={col.name} items={taskList[col.id].content} totalElements={taskList[col.id].totalElements} />
                   
                     ))
                 }
             
-                <DragOverlay>{activeId ? <Item id={activeId} name="some" /> : null}</DragOverlay>
+                <DragOverlay>{activeId ? <Item id={activeId.id} name={activeId.title} /> : null}</DragOverlay>
               </DndContext>
             </div>
           );
