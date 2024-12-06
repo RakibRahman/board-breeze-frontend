@@ -23,6 +23,8 @@ export const useTaskDnD = ({taskList,setTaskList}:UseTaskDnDProps)=>{
   const [activeTask, setActiveTask] = useState<{id:string,title:string} | null>();
   const lastActiveId = useRef<string | number | null>(null);
   const activeContainerId = useRef<UniqueIdentifier | null>(null);
+  const activeContainerTaskIndex = useRef<number | null>(null);
+
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -44,7 +46,8 @@ export const useTaskDnD = ({taskList,setTaskList}:UseTaskDnDProps)=>{
     const activeItems = taskList![activeContainerId.current];
     const overItems = taskList[overContainer];
     let overIndex = overItems.content.findIndex((m) => m.id === overId);
-    let activeIndex = activeItems.content.findIndex((m) => m.id === activeId);
+    let activeIndex =       activeContainerTaskIndex.current;
+console.log({activeIndex});
 
     if (activeIndex === -1) activeIndex = 0;
     if (overIndex === -1) overIndex = 0;
@@ -110,6 +113,10 @@ const moveTaskWithinColumn = ({activeContainer, overContainer, activeId, overId}
         const { id ,data} = active;
     console.log({data:data.current});
     const findActiveTask = taskList[data?.current?.columnId].content.find((task)=>task.id===id);
+    const findActiveTaskIndex = taskList[data?.current?.columnId].content.findIndex((task)=>task.id===id);
+    console.log({findActiveTaskIndex});
+    activeContainerTaskIndex.current = findActiveTaskIndex
+    
         setActiveTask(findActiveTask);
 
         const activeContainer = findContainer(active.id);
@@ -223,6 +230,8 @@ const moveTaskWithinColumn = ({activeContainer, overContainer, activeId, overId}
     
         setActiveTask(null);
       activeContainerId.current=null
+      activeContainerTaskIndex.current =null
+
     
     }
     return{sensors,onDragEnd,onDragStart,onDragOver, activeTask}

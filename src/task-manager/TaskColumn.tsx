@@ -45,7 +45,7 @@ export default function TaskColumn(props:TaskColumnProps) {
       strategy={verticalListSortingStrategy}
     >
       <div ref={setNodeRef} style={containerStyle}>
-        {name}--{totalElements}
+        {name}--{totalElements}---{items.length}
         <div  className="column">
         {items.map((id) => (
          id?.id ? <TaskDragCard key={id.id} id={id.id} name={id.title} columnId={columnId as never} /> :null
