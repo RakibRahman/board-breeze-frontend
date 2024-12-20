@@ -24,6 +24,10 @@ const TaskManager = () => {
                 onDragStart={onDragStart}
                 onDragOver={onDragOver}
                 onDragEnd={onDragEnd}
+                onDragAbort={()=>{
+                  console.log('cal');
+                  
+                }}
               >
                 {
                     columns.map((col)=>(

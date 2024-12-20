@@ -47,7 +47,7 @@ export const useTaskDnD = ({taskList,setTaskList}:UseTaskDnDProps)=>{
     const overItems = taskList[overContainer];
     let overIndex = overItems.content.findIndex((m) => m.id === overId);
     let activeIndex =       activeContainerTaskIndex.current;
-console.log({activeIndex});
+console.log({overIndex});
 
     if (activeIndex === -1) activeIndex = 0;
     if (overIndex === -1) overIndex = 0;
@@ -146,7 +146,6 @@ const moveTaskWithinColumn = ({activeContainer, overContainer, activeId, overId}
         setTaskList((prev) => {
           const activeItems = prev[activeContainer].content;
           const overItems = prev[overContainer].content;
-      
           // Find the indexes for the items
           const activeIndex = activeItems.findIndex((item) => item.id === activeId);
           const overIndex = overItems.findIndex((item) => item.id === overId);
